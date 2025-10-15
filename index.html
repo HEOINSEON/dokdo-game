@@ -1,0 +1,517 @@
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>또또와 도리의 독도 수호 대작전 (공유용)</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+            /* 기본 배경 및 글꼴 설정 */
+            body {
+                font-family: 'Noto Sans KR', sans-serif;
+                background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+                color: #e0e0e0;
+            }
+            /* 게임 컨테이너 스타일 */
+            .game-container {
+                max-width: 600px;
+                background-color: rgba(10, 30, 40, 0.8);
+                border: 2px solid rgba(135, 206, 235, 0.5);
+                box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
+            }
+            /* 캐릭터 대화 상자 스타일 */
+            .character-box {
+                border: 1px solid rgba(135, 206, 235, 0.4);
+                background-color: rgba(44, 83, 100, 0.5);
+            }
+            /* 주요 버튼 스타일 */
+            .btn-primary {
+                background: linear-gradient(45deg, #38a169, #4fd1c5);
+                transition: all 0.3s ease;
+            }
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            }
+            /* 입력 필드 스타일 */
+            .input-field {
+                background-color: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(135, 206, 235, 0.5);
+                color: white;
+            }
+            .input-field::placeholder {
+                color: #9ca3af;
+            }
+            /* 진행 바 스타일 */
+            .progress-bar-inner {
+                background: linear-gradient(90deg, #4fd1c5, #38a169);
+                transition: width 0.5s ease-in-out;
+            }
+            /* 스테이지 전환 애니메이션 */
+            .stage {
+                animation: fadeIn 0.8s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            /* 완주증 모달 배경 */
+            #certificate-modal {
+                background: rgba(0,0,0,0.7);
+            }
+            /* 완주증 디자인 */
+            #certificate {
+                 background: linear-gradient(145deg, #f7f3e8, #ffffff); 
+                 color: #1a202c; 
+                 border: 5px solid #c9b037; 
+                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+            }
+            /* 미션 선택 버튼 스타일 */
+            .option-btn {
+                background-color: rgba(44, 83, 100, 0.7);
+                transition: background-color 0.2s;
+            }
+            .option-btn:hover {
+                background-color: rgba(64, 103, 120, 0.9);
+            }
+        </style>
+    </head>
+    <body class="min-h-screen flex items-center justify-center p-4">
+
+        <div id="game-container" class="game-container w-full mx-auto p-6 rounded-2xl">
+            <!-- 진행 바 -->
+            <div class="w-full bg-gray-700 rounded-full h-4 mb-6">
+                <div id="progress-bar" class="progress-bar-inner h-4 rounded-full" style="width: 0%"></div>
+            </div>
+
+            <!-- Stage 0: 시작 화면 -->
+            <div id="stage-0" class="stage text-center">
+                <h1 class="text-3xl font-bold mb-2 text-teal-300">또또와 도리의 독도 수호 대작전</h1>
+                <p class="mb-6">AI 독도 지킴이 또또와 도리가 되어 사라진 독도의 기억을 되찾아주세요!</p>
+                
+                <!-- 학번 입력 필드 -->
+                <div class="mb-4">
+                    <label for="student-id" class="block mb-2 text-left ml-auto max-w-sm">탐험가님의 학번을 알려주세요! (5자리 필수)</label>
+                    <input type="text" id="student-id" class="input-field w-full max-w-sm mx-auto p-2 rounded-lg" placeholder="예: 10100 (5자리)">
+                </div>
+                
+                <!-- 이름 입력 필드 -->
+                <div class="mb-6">
+                    <label for="player-name" class="block mb-2 text-left ml-auto max-w-sm">탐험가님의 이름을 알려주세요! (필수)</label>
+                    <input type="text" id="player-name" class="input-field w-full max-w-sm mx-auto p-2 rounded-lg" placeholder="예: 홍길동">
+                </div>
+
+                <button onclick="startGame()" class="btn-primary font-bold py-2 px-6 rounded-full w-full max-w-sm">
+                    탐험 시작하기!
+                </button>
+                <p id="start-feedback" class="text-red-400 mt-2 h-5"></p>
+            </div>
+
+            <!-- 스테이지 1-11 컨테이너 (동적 콘텐츠 로드) -->
+            <div id="stage-1" class="stage hidden"></div>
+            <div id="stage-2" class="stage hidden"></div>
+            <div id="stage-3" class="stage hidden"></div>
+            <div id="stage-4" class="stage hidden"></div>
+            <div id="stage-5" class="stage hidden"></div>
+            <div id="stage-6" class="stage hidden"></div>
+            <div id="stage-7" class="stage hidden"></div>
+            <div id="stage-8" class="stage hidden"></div>
+            <div id="stage-9" class="stage hidden"></div>
+            <div id="stage-10" class="stage hidden"></div>
+            <div id="stage-11" class="stage hidden"></div> <!-- 최종 서약 스테이지 -->
+
+        </div>
+
+        <!-- 완주증 모달 -->
+        <div id="certificate-modal" class="fixed inset-0 hidden items-center justify-center p-4 z-50">
+            <div id="certificate" class="w-full max-w-lg p-8 rounded-2xl text-center relative">
+                <h2 class="text-3xl font-bold mb-4">독도 수호 대작전 완주증</h2>
+                
+                <p class="text-lg mb-2">위 탐험가 <span id="cert-name" class="font-bold text-2xl"></span> 님은</p>
+                <div class="mb-6 text-center text-sm">
+                    <p>AI 지킴이 또또, 도리와 함께 시간의 바다를 항해하며 독도의 소중한 기억을 모두 되찾았기에 이 증서를 수여합니다.</p>
+                </div>
+                
+                <!-- 시간 정보 섹션 -->
+                <div class="mb-6 mt-4 text-left p-4 bg-gray-100 rounded-lg shadow-inner">
+                    <p class="font-bold text-base mb-1">▶ 학번: <span id="cert-id" class="font-normal"></span></p>
+                    <p class="font-bold text-base mb-1">▶ 시작 시각: <span id="cert-start-time" class="font-normal"></span></p>
+                    <p class="font-bold text-base mb-1">▶ 종료 시각: <span id="cert-end-time" class="font-normal"></span></p>
+                    <p class="font-bold text-xl mt-3 text-red-600">총 소요 시각: <span id="cert-elapsed-time" class="font-extrabold"></span></p>
+                </div>
+                
+                <p class="font-bold mb-4">나의 독도 수호 서약:</p>
+                <p id="cert-pledge" class="text-base italic mb-8 p-2 rounded"></p>
+                <p id="cert-date" class="text-sm"></p>
+                
+                <button onclick="closeCert()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 font-bold">X</button>
+            </div>
+        </div>
+
+
+        <script>
+            // --- Game State Variables ---
+            let currentStage = 0;
+            let playerName = '';
+            let studentId = ''; 
+            let startTime = null; 
+            let endTime = null;   
+            let selectedPledge = '';
+            const totalStages = 11; 
+
+            // --- Game Stages Data ---
+            const stages = [
+                // Stage 1: 대한제국 칙령 제41호
+                {
+                    title: "미션 1: 시간의 암호를 풀어라!",
+                    ddoddo: "큰일났어! '메모리 바이러스' 때문에 독도가 우리 땅이라는 첫 번째 공식 기록이 사라졌어! 이 기록이 언제 발표됐는지 날짜를 입력해서 바이러스를 막아줘!",
+                    dori: "이 칙령은 **울릉도 관할 구역**을 정하면서 독도를 공식적으로 우리 영토로 확인한 중요한 기록이에요. **20세기 초**에 발표되었답니다.",
+                    content: `
+                        <div class="flex flex-col sm:flex-row gap-2 justify-center my-4">
+                            <input type="number" id="q1-year" class="input-field p-2 rounded-lg text-center w-full sm:w-24" placeholder="OOOO년">
+                            <input type="number" id="q1-month" class="input-field p-2 rounded-lg text-center w-full sm:w-20" placeholder="OO월">
+                            <input type="number" id="q1-day" class="input-field p-2 rounded-lg text-center w-full sm:w-20" placeholder="OO일">
+                        </div>
+                        <button onclick="checkAnswer(1)" class="btn-primary w-full font-bold py-2 px-6 rounded-full mt-2">암호 입력!</button>
+                    `,
+                    check: () => {
+                        const year = document.getElementById('q1-year').value.trim();
+                        const month = document.getElementById('q1-month').value.trim();
+                        const day = document.getElementById('q1-day').value.trim();
+                        return (year === '1900' && month === '10' && day === '25');
+                    },
+                    correctFeedback: '🐳 정답이에요! 대한제국 칙령 제41호, 기억하고 있군요!',
+                    incorrectFeedback: '🐧 앗, 틀렸어! 그래서 내 이름이 또또인가봐... 다시 시도해봐!',
+                },
+                // Stage 2: 울릉도 개척령 발표 연도
+                {
+                    title: "미션 2: 섬 개척의 해를 맞춰라!",
+                    ddoddo: "조선 정부가 **울릉도 개척령**을 발표하여 주민들의 거주와 정착을 공식적으로 허용한 해는 언제였을까? **연도 네 자리**만 입력해줘!",
+                    dori: "이 조치 덕분에 **울릉도와 독도가 조선의 영토임**이 더욱 확고히 되었고, **일본 어부의 침입을 막는** 효과도 있었어요. **19세기 후반**입니다.",
+                    content: `
+                        <div class="flex flex-col gap-3 justify-center my-4">
+                            <input type="number" id="q2-year" class="input-field p-2 rounded-lg text-center w-full max-w-sm mx-auto" placeholder="OOOO년">
+                        </div>
+                        <button onclick="checkAnswer(2)" class="btn-primary w-full font-bold py-2 px-6 rounded-full mt-2">연도 확인!</button>
+                    `,
+                    check: () => document.getElementById('q2-year').value.trim() === '1883',
+                    correctFeedback: '🐳 정확해요! 1883년 울릉도 개척령으로 독도에 대한 지배가 더욱 강화되었답니다.',
+                    incorrectFeedback: '🐧 땡! 조선이 일본의 침략이 심해지기 전에 섬을 보호하려고 했던 시기였어!',
+                },
+                // Stage 3: 안용복
+                {
+                    title: "미션 3: 용감한 어부의 이름을 맞혀봐!",
+                    ddoddo: "맞아! 조선시대에 **일본으로 건너가서** 독도가 우리 땅이라고 당당하게 외친 사람이야! 정말 용감하지 않니?",
+                    dori: "이분은 **어부** 출신이지만, 뛰어난 용기와 논리로 일본 조정에게까지 독도 영유권을 주장했어요. 그의 **성함 세 글자**를 기억해 보세요.",
+                    content: `<input type="text" id="q3-answer" class="input-field w-full p-2 rounded-lg text-center" placeholder="이름을 입력하세요">
+                              <button onclick="checkAnswer(3)" class="btn-primary w-full font-bold py-2 px-6 rounded-full mt-2">이름 확인!</button>`,
+                    check: () => document.getElementById('q3-answer').value.trim() === '안용복',
+                    correctFeedback: '🐳 맞아요, 안용복! 그의 용기 덕분에 독도를 지킬 수 있었어요.',
+                    incorrectFeedback: '🐧 땡! 이름이 기억 안나... 힌트는 Aㅏㄴ Yㅗㅇ Bㅗㄱ!',
+                },
+                 // Stage 4: 지리 (동도, 서도)
+                {
+                    title: "미션 4: 독도의 두 얼굴!",
+                    ddoddo: "두 섬은 각각 **해가 뜨는 방향**과 **해가 지는 방향**의 이름을 따서 불린다고 들었어! 잘 생각해봐.",
+                    dori: "우리 국토의 가장 동쪽에서 **24시간 대한민국을 밝히는** 두 봉우리! 경비대와 주민들이 생활하는 두 섬의 이름을 각각 찾아주세요.",
+                    content: `
+                        <div class="flex flex-col sm:flex-row gap-2 justify-center my-4">
+                            <input type="text" id="q4-answer1" class="input-field p-2 rounded-lg text-center w-full" placeholder="동쪽 섬 이름">
+                            <input type="text" id="q4-answer2" class="input-field p-2 rounded-lg text-center w-full" placeholder="서쪽 섬 이름">
+                        </div>
+                        <button onclick="checkAnswer(4)" class="btn-primary w-full font-bold py-2 px-6 rounded-full mt-2">이름 확인!</button>
+                    `,
+                    check: () => {
+                        const a1 = document.getElementById('q4-answer1').value.trim();
+                        const a2 = document.getElementById('q4-answer2').value.trim();
+                        // 순서에 상관없이 동도, 서도만 정답으로 처리
+                        return (a1 === '동도' && a2 === '서도') || (a1 === '서도' && a2 === '동도');
+                    },
+                    correctFeedback: '🐳 정확해요! 동도와 서도, 둘 다 우리의 소중한 독도랍니다.',
+                    incorrectFeedback: '🐧 하나는 맞는데... 다른 하나는 뭐였지? 동쪽, 서쪽에 힌트가 있어!',
+                },
+                // Stage 5: 거리 (울릉도)
+                {
+                    title: "미션 5: 누구랑 더 가까울까?",
+                    ddoddo: "두 곳 중에서 독도와 **더 가까워서** **맑은 날 맨눈으로** 볼 수 있는 곳이 어디일까?",
+                    dori: "국제법상으로도 가까운 본토의 일부로 인정받습니다. **가장 가까운 우리 땅**을 골라보세요.",
+                    content: `
+                        <div class="flex flex-col gap-3">
+                            <button onclick="checkAnswer(5, 'A')" class="option-btn w-full text-left p-3 rounded-lg">A) 울릉도</button>
+                            <button onclick="checkAnswer(5, 'B')" class="option-btn w-full text-left p-3 rounded-lg">B) 일본 오키섬</button>
+                        </div>`,
+                    check: (answer) => answer === 'A',
+                    correctFeedback: '🐳 물론이죠! 독도는 역사적으로나 지리적으로나 울릉도의 일부로 여겨졌어요.',
+                    incorrectFeedback: '🐧 으앗, 더 먼 곳으로 가면 안 돼! 다시 생각해 봐!',
+                },
+                // Stage 6: 천연기념물 지정 번호
+                {
+                    title: "미션 6: 천연기념물 번호를 찾아라!",
+                    ddoddo: "독도는 **훼손되지 않은 자연 환경** 때문에 나라에서 아주 소중하게 보호하고 있대! 천연기념물로 지정될 때 받은 **고유 번호**가 뭘까?",
+                    dori: "1982년에 처음 지정된 독도는 시간이 지나면서 지질학적 가치를 인정받아 번호가 한 번 바뀌었어요. **현재 지정된 번호**를 찾아주세요.",
+                    content: `
+                        <div class="flex flex-col gap-3">
+                            <button onclick="checkAnswer(6, 'A')" class="option-btn w-full text-left p-3 rounded-lg">A) 제100호 (대한민국의 깃대종)</button>
+                            <button onclick="checkAnswer(6, 'B')" class="option-btn w-full text-left p-3 rounded-lg">B) 제336호 (천연보호구역)</button>
+                            <button onclick="checkAnswer(6, 'C')" class="option-btn w-full text-left p-3 rounded-lg">C) 제450호 (독도 천연보호구역)</button>
+                        </div>`,
+                    check: (answer) => answer === 'C',
+                    correctFeedback: '🐳 훌륭해요! 독도는 천연기념물 제450호로 지정되어 보호받고 있답니다.',
+                    incorrectFeedback: '🐧 땡! 좀 더 최근에 지정된 번호에 가까울 거야.',
+                },
+                // Stage 7: 천연자원 (메탄 하이드레이트)
+                {
+                    title: "미션 7: 불타는 얼음을 찾아라!",
+                    ddoddo: "얼음처럼 차가운데 불을 붙이면 활활 타는 **신기한 물질**이래! 과학자들이 '미래 에너지'라고 부르는 거래!",
+                    dori: "이 자원은 **수소와 메탄** 성분으로 이루어져 있습니다. 이 자원을 확보하는 것은 우리나라의 **에너지 주권**에 큰 영향을 줍니다. 이름 세 글자를 맞춰보세요.",
+                    content: `
+                        <div class="flex flex-col gap-3">
+                            <button onclick="checkAnswer(7, 'A')" class="option-btn w-full text-left p-3 rounded-lg">A) 석유</button>
+                            <button onclick="checkAnswer(7, 'B')" class="option-btn w-full text-left p-3 rounded-lg">B) 액체수소</button>
+                            <button onclick="checkAnswer(7, 'C')" class="option-btn w-full text-left p-3 rounded-lg">C) 메탄 하이드레이트</button>
+                        </div>`,
+                    check: (answer) => answer === 'C',
+                    correctFeedback: '🐳 맞아요! 독도는 영토뿐만 아니라 소중한 자원의 보고이기도 해요.',
+                    incorrectFeedback: '🐧 그건 아니야! 얼음인데 불이 붙는 신기한 에너지라고!',
+                },
+                // Stage 8: 주소 (독도리)
+                {
+                    title: "미션 8: 독도로 보내는 편지!",
+                    ddoddo: "마지막 빈칸은 바로 섬 이름과 똑같은 이름의 **행정구역 명칭**이래! '경상북도 울릉군 울릉읍 **(????)**' 이야.",
+                    dori: "2000년대부터 독도는 법적으로 **하나의 마을**이 되었습니다. 주소의 마지막에 들어갈 그 마을 이름을 완성해 주세요.",
+                    content: `<div class="text-lg my-4 text-center">경상북도 울릉군 울릉읍 <input type="text" id="q8-answer" class="input-field p-2 rounded-lg text-center w-24" placeholder="???"></div>
+                              <button onclick="checkAnswer(8)" class="btn-primary w-full font-bold py-2 px-6 rounded-full mt-2">주소 완성!</button>`,
+                    check: () => document.getElementById('q8-answer').value.trim() === '독도리',
+                    correctFeedback: '🐳 정확해요! 이제 편지를 보낼 수 있겠네요!',
+                    incorrectFeedback: "🐧 땡! 섬 이름이 들어가는 '리'야!",
+                },
+                // Stage 9: 독도 경비대
+                {
+                    title: "미션 9: 독도의 든든한 수호자!",
+                    ddoddo: "매일 태극기를 올리고, 섬에 **상주**하며 외부인의 접근을 막는 든든한 분들! 육군도 해군도 아닌, 바로 **OO 경비대**야!",
+                    dori: "이분들은 **경찰의 임무**를 수행하며 독도의 시설을 보호하고 영토를 수호하고 있습니다.",
+                    content: `
+                        <div class="flex flex-col gap-3">
+                            <button onclick="checkAnswer(9, 'A')" class="option-btn w-full text-left p-3 rounded-lg">A) 해군</button>
+                            <button onclick="checkAnswer(9, 'B')" class="option-btn w-full text-left p-3 rounded-lg">B) 독도 경비대</button>
+                            <button onclick="checkAnswer(9, 'C')" class="option-btn w-full text-left p-3 rounded-lg">C) 소방관</button>
+                        </div>`,
+                    check: (answer) => answer === 'B',
+                    correctFeedback: '🐳 맞습니다. 독도 경비대원들의 헌신 덕분에 우리는 안심할 수 있어요.',
+                    incorrectFeedback: '🐧 어? 그분들은 다른 곳을 지키시잖아!',
+                },
+                 // Stage 10: 독도의 의미 (종합)
+                {
+                    title: "미션 10: 독도는 우리에게 어떤 의미일까?",
+                    ddoddo: "거의 다 왔어! 마지막으로, 독도가 왜 우리에게 중요한지 알려줘! 정답은 하나가 아닐 수도 있어!",
+                    dori: "독도는 단순한 섬이 아니라, 우리 민족의 자존심이자 역사의 상징입니다. 올바른 설명을 골라주세요.",
+                    content: `
+                        <div class="flex flex-col gap-3">
+                            <button onclick="checkAnswer(10, 'A')" class="option-btn w-full text-left p-3 rounded-lg">A) 대한민국 영토의 동쪽 끝을 표시하는 중요한 기준점이다.</button>
+                            <button onclick="checkAnswer(10, 'B')" class="option-btn w-full text-left p-3 rounded-lg">B) 풍부한 해양 자원과 미래 에너지를 품고 있다.</button>
+                            <button onclick="checkAnswer(10, 'C')" class="option-btn w-full text-left p-3 rounded-lg">C) 오랜 역사를 통해 증명된 명백한 우리 고유의 영토이다.</button>
+                            <button onclick="checkAnswer(10, 'D')" class="option-btn w-full text-left p-3 rounded-lg">D) 위의 모든 것을 포함한다.</button>
+                        </div>`,
+                    check: (answer) => answer === 'D',
+                    correctFeedback: '🐳 훌륭해요! 독도의 모든 중요성을 정확히 알고 있군요.',
+                    incorrectFeedback: '🐧 음... 그것도 맞지만, 더 큰 의미가 숨어있어!',
+                },
+                // Stage 11: 서약 (최종 미션)
+                {
+                    title: "최종 미션: 독도 수호 서약!",
+                    ddoddo: "해냈어! 네 덕분에 독도의 모든 기억을 되찾았어! 정말 대단해! 이제 마지막으로, 우리와 함께 독도를 지키겠다고 약속해 줄래?",
+                    dori: "독도를 기억하고, 탐구하고, 지키는 '디지털 시대의 독도 시민성'은 여러분의 작은 다짐에서 시작됩니다. 앞으로 독도를 위해 할 수 있는 일을 선택해주세요.",
+                    content: `
+                        <div class="flex flex-col gap-3" id="pledge-options">
+                            <button data-pledge="독도의 역사와 가치를 친구들에게 알리겠습니다." class="option-btn w-full text-left p-3 rounded-lg">독도 역사 알리기</button>
+                            <button data-pledge="독도에 대한 정확한 정보를 꾸준히 배우겠습니다." class="option-btn w-full text-left p-3 rounded-lg">꾸준히 공부하기</button>
+                            <button data-pledge="독도를 사랑하는 마음을 담아 멋진 창작물을 만들겠습니다." class="option-btn w-full text-left p-3 rounded-lg">창작물로 사랑 표현하기</button>
+                        </div>`,
+                    isPledge: true,
+                }
+            ];
+
+            /**
+             * 특정 스테이지의 내용을 렌더링합니다.
+             */
+            function renderStage(stageNum) {
+                const stageData = stages[stageNum - 1];
+                if (!stageData) return;
+
+                const stageContainer = document.getElementById(`stage-${stageNum}`);
+                let html = `
+                    <h2 class="text-2xl font-bold mb-4 text-teal-300">${stageData.title}</h2>
+                    <div class="character-box p-4 rounded-lg mb-4">
+                        <p>🐧 <span class="font-bold text-yellow-300">또또:</span> ${stageData.ddoddo}</p>
+                        <p class="mt-2">🐳 <span class="font-bold text-sky-300">도리:</span> ${stageData.dori}</p>
+                    </div>
+                    ${stageData.content}
+                    <p id="feedback-${stageNum}" class="text-center mt-3 h-5"></p>
+                `;
+                stageContainer.innerHTML = html;
+                
+                // 최종 서약 스테이지인 경우 이벤트 리스너를 추가합니다.
+                if (stageData.isPledge) {
+                    document.getElementById('pledge-options').addEventListener('click', function(e) {
+                        if (e.target.tagName === 'BUTTON') {
+                            selectedPledge = e.target.dataset.pledge;
+                            showCertificate(); // 서약 후 완주증 표시
+                        }
+                    });
+                }
+            }
+            
+            /**
+             * 특정 스테이지를 보여주고 진행 상황을 업데이트합니다.
+             */
+            function showStage(stageNum) {
+                document.querySelectorAll('.stage').forEach(stage => stage.classList.add('hidden'));
+                const nextStage = document.getElementById(`stage-${stageNum}`);
+                if (nextStage) {
+                    if (stageNum !== 0) { // 시작 화면이 아닐 때만 렌더링
+                        renderStage(stageNum);
+                    }
+                    nextStage.classList.remove('hidden');
+                    currentStage = stageNum;
+                    updateProgressBar();
+                }
+            }
+            
+            /**
+             * 진행 바 상태를 업데이트합니다.
+             */
+            function updateProgressBar() {
+                // 스테이지 0은 0%, 스테이지 11이 100%
+                const progress = currentStage === 0 ? 0 : ((currentStage - 1) / (totalStages - 1)) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+            }
+
+            /**
+             * 게임을 시작하고 플레이어 이름과 학번을 확인합니다.
+             */
+            function startGame() {
+                const nameInput = document.getElementById('player-name');
+                const idInput = document.getElementById('student-id');
+                const feedback = document.getElementById('start-feedback');
+
+                playerName = nameInput.value.trim();
+                studentId = idInput.value.trim();
+                
+                feedback.textContent = ''; 
+
+                if (playerName === '' || studentId === '') {
+                    feedback.textContent = '학번과 이름을 모두 입력해야 탐험을 시작할 수 있습니다.';
+                    return;
+                }
+
+                // 학번 5자리 및 숫자 유효성 검사
+                if (!/^\d{5}$/.test(studentId)) {
+                    feedback.textContent = '학번은 정확히 5자리의 숫자로 입력해 주세요.';
+                    return;
+                }
+                
+                // 시작 시간 기록
+                startTime = new Date();
+                showStage(1);
+            }
+
+            /**
+             * 현재 스테이지의 정답을 확인합니다.
+             */
+            function checkAnswer(stageNum, value = null) {
+                const stageData = stages[stageNum - 1];
+                const feedback = document.getElementById(`feedback-${stageNum}`);
+                
+                const result = stageData.check(value);
+                
+                if (result) {
+                    feedback.textContent = stageData.correctFeedback;
+                    feedback.style.color = '#4fd1c5';
+                    
+                    // 2초 후 다음 스테이지로 이동 (마지막 미션이 아닐 경우)
+                    if (stageNum < totalStages) {
+                        setTimeout(() => showStage(stageNum + 1), 2000);
+                    }
+                } else {
+                    feedback.textContent = stageData.incorrectFeedback;
+                    feedback.style.color = '#f87171';
+                }
+            }
+            
+            /**
+             * 완주증 모달을 표시하고 내용을 채웁니다.
+             */
+            function showCertificate() {
+                endTime = new Date(); 
+
+                // 시간 포맷팅 헬퍼 함수
+                const formatTime = (date) => {
+                    if (!date) return '기록 없음';
+                    return date.getFullYear() + '.' +
+                           (date.getMonth() + 1).toString().padStart(2, '0') + '.' +
+                           date.getDate().toString().padStart(2, '0') + ' ' +
+                           date.getHours().toString().padStart(2, '0') + ':' +
+                           date.getMinutes().toString().padStart(2, '0') + ':' +
+                           date.getSeconds().toString().padStart(2, '0');
+                };
+
+                // 소요 시간 계산
+                let elapsedTimeString = '0분 0초';
+                if (startTime && endTime) {
+                    const elapsedMilliseconds = endTime.getTime() - startTime.getTime();
+                    const totalSeconds = Math.floor(elapsedMilliseconds / 1000);
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = totalSeconds % 60;
+                    elapsedTimeString = `${minutes}분 ${seconds}초`;
+                }
+
+                // --- UI 업데이트 ---
+                document.getElementById('cert-name').textContent = playerName;
+                document.getElementById('cert-id').textContent = studentId; 
+                document.getElementById('cert-start-time').textContent = formatTime(startTime); 
+                document.getElementById('cert-end-time').textContent = formatTime(endTime); 
+                document.getElementById('cert-elapsed-time').textContent = elapsedTimeString; 
+                document.getElementById('cert-pledge').textContent = selectedPledge;
+                
+                const today = new Date();
+                document.getElementById('cert-date').textContent = 
+                    `발행일: ${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+                
+                document.getElementById('progress-bar').style.width = `100%`; 
+
+                document.getElementById('certificate-modal').classList.remove('hidden');
+                document.getElementById('certificate-modal').classList.add('flex');
+            }
+
+            /**
+             * 완주증 모달을 닫고 게임을 초기화합니다.
+             */
+            function closeCert() {
+                document.getElementById('certificate-modal').classList.add('hidden');
+                document.getElementById('certificate-modal').classList.remove('flex');
+                
+                // 게임 상태 초기화
+                document.getElementById('player-name').value = '';
+                document.getElementById('student-id').value = ''; 
+                startTime = null; 
+                endTime = null;
+                
+                currentStage = 0;
+                showStage(0); 
+            }
+
+            // 함수들을 전역 범위로 노출하여 HTML 버튼에서 사용할 수 있도록 합니다.
+            window.startGame = startGame;
+            window.checkAnswer = checkAnswer;
+            window.closeCert = closeCert;
+            window.showStage = showStage;
+
+            // 초기 설정: 시작 화면 표시
+            window.onload = () => {
+                showStage(0);
+            };
+        </script>
+    </body>
+    </html>
+    
